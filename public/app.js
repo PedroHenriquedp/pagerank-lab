@@ -43,7 +43,8 @@ function drawGraph(){
     }
   }
   const points={A:[96,176],B:[300,66],C:[540,176],D:[300,306]};
-  for(const page of pages){const [x,y]=points[page.id];const group=svg('g',{class:`graph-node${state.step>0&&page.id==='C'?' winner':''}${state.step===2&&page.id==='D'?' promoted':''}`},root);svg('circle',{class:'halo',cx:x,cy:y,r:'42'},group);svg('circle',{class:'disc',cx:x,cy:y,r:'36',fill:page.color},group);svg('text',{class:'letter',x,y:y+2,fill:page.color},group).textContent=page.id;if(innerWidth>680)svg('text',{class:'node-title',x,y:y+64},group).textContent=page.name}
+  const labelY={A:112,B:14,C:112,D:374};
+  for(const page of pages){const [x,y]=points[page.id];const group=svg('g',{class:`graph-node${state.step>0&&page.id==='C'?' winner':''}${state.step===2&&page.id==='D'?' promoted':''}`},root);svg('circle',{class:'halo',cx:x,cy:y,r:'42'},group);svg('circle',{class:'disc',cx:x,cy:y,r:'36',fill:page.color},group);svg('text',{class:'letter',x,y:y+2,fill:page.color},group).textContent=page.id;if(innerWidth>680)svg('text',{class:'node-title',x,y:labelY[page.id]},group).textContent=page.name}
   $('network-badge').textContent=state.step===2?'6 links · 1 novo':'5 links';
   root.setAttribute('aria-label',state.step===2?'Rede de quatro páginas; C agora também aponta para D.':'Rede de quatro páginas com links A para C, B para C, C para A e D para A e B.');
 }
@@ -62,17 +63,46 @@ function updateScores(){
   $('scoreboard-summary').textContent=state.step===0?'Todas as páginas começam iguais.':`Ordem das páginas: ${result.order.join(', ')}. ${caption}`;
 }
 
+function showSearchOrder(changed,animate=false){
+  const list=$('search-results');
+  const items=new Map([...list.children].map(item=>[item.dataset.page,item]));
+  for(const item of items.values()){for(const animation of item.getAnimations())animation.cancel();item.style.zIndex=''}
+  const previous=new Map([...items.values()].map(item=>[item,item.getBoundingClientRect().top]));
+  const order=(changed?state.changed:state.original).order;
+  for(const id of order)list.append(items.get(id));
+  if(animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    for(const item of items.values()){
+      const offset=previous.get(item)-item.getBoundingClientRect().top;
+      if(Math.abs(offset)>1){
+        item.style.zIndex=offset>0?'2':'1';
+        const movement=item.animate([{transform:`translateY(${offset}px)`},{transform:'translateY(0)'}],{duration:760,easing:'cubic-bezier(.2,.75,.2,1)'});
+        movement.onfinish=()=>{item.style.zIndex=''};
+      }
+    }
+  }
+  $('search-result-status').textContent=changed?'Com C → D, a ordem é C, A, D, B. D subiu do quarto para o terceiro lugar.':'Ordem original: C, A, B, D.';
+  $('search-toggle').textContent=changed?'Remover C → D':'Adicionar C → D';
+  $('search-toggle').setAttribute('aria-pressed',String(changed));
+}
+
+function setupSearchExample(){
+  let changed=false;
+  const button=$('search-toggle');
+  button.disabled=false;
+  button.onclick=()=>{changed=!changed;showSearchOrder(changed,true)};
+  showSearchOrder(false);
+}
+
 function guideMarkup(){
-  if(state.step===0)return `<p class="guide-kicker">Passo 1 de 3</p><h3>Qual página é a mais importante?</h3><p>Imagine que você precisa ordenar as quatro páginas usando apenas os links. Cada seta sai de quem indica e chega a quem recebe a indicação. Observe a rede e dê seu palpite.</p><div class="choices" role="group" aria-label="Escolha uma página"><button class="choice" type="button" data-guess="A" aria-pressed="${state.guess==='A'}"><b>A</b><small>Apostila</small></button><button class="choice" type="button" data-guess="B" aria-pressed="${state.guess==='B'}"><b>B</b><small>Blog</small></button><button class="choice" type="button" data-guess="C" aria-pressed="${state.guess==='C'}"><b>C</b><small>Portal</small></button><button class="choice" type="button" data-guess="D" aria-pressed="${state.guess==='D'}"><b>D</b><small>Notas</small></button></div><div class="guide-actions"><button class="primary-button" id="next" type="button" ${state.guess?'':'disabled'}>Ver o que acontece</button><span class="guide-hint">Escolha uma página para continuar.</span></div>`;
+  if(state.step===0)return `<p class="guide-kicker">Passo 1 de 3</p><h3>Qual página é a mais importante?</h3><p>Imagine que você precisa ordenar as quatro páginas usando apenas os links. Cada seta sai de quem indica e chega a quem recebe a indicação. Observe a rede e dê seu palpite.</p><div class="choices" role="group" aria-label="Escolha uma página"><button class="choice" type="button" data-guess="A" aria-pressed="${state.guess==='A'}"><b>A</b><small>Apostila</small></button><button class="choice" type="button" data-guess="B" aria-pressed="${state.guess==='B'}"><b>B</b><small>Blog</small></button><button class="choice" type="button" data-guess="C" aria-pressed="${state.guess==='C'}"><b>C</b><small>Portal</small></button><button class="choice" type="button" data-guess="D" aria-pressed="${state.guess==='D'}"><b>D</b><small>Notas</small></button></div><div class="guide-actions"><button class="primary-button" id="next" type="button" ${state.guess?'':'disabled'}>Ver o que acontece</button></div>`;
   if(state.step===1)return `<p class="guide-kicker">Passo 2 de 3</p><h3>C ficou em primeiro.</h3><p>A e B apontam para C. As bolinhas coloridas mostram a importância seguindo os links. C aponta de volta para A, por isso as duas páginas se fortalecem.</p><div class="mini-explain"><strong>Por que C passou A?</strong>D divide sua importância entre A e B. B a encaminha para C, que recebe a indicação de A também. O algoritmo repete essas trocas até a ordem se estabilizar.</div><p class="result-order">Ordem: <strong>${state.original.order.join(' · ')}</strong></p><p class="prediction">Seu palpite: <strong>${state.guess}</strong> · Primeiro lugar: <strong>${state.original.order[0]}</strong></p><div class="guide-actions"><button class="primary-button" id="next" type="button">Adicionar C → D</button></div>`;
   return `<p class="guide-kicker">Passo 3 de 3</p><h3>Um link fez D subir.</h3><p>Antes, C apontava apenas para A. Agora também aponta para D e divide sua importância entre as duas páginas.</p><p>Como C é a mais importante, sua indicação ajuda D a subir do 4º para o 3º lugar. B cai para 4º, mesmo sem perder nenhum link.</p><div class="comparison"><div><small>Antes: 5 links</small><strong>${state.original.order.join(' ')}</strong></div><div class="after"><small>Depois: 6 links</small><strong>${state.changed.order.join(' ')}</strong></div></div><div class="insight">Cada link transporta parte da importância de sua origem. Por isso, uma nova conexão pode mudar toda a ordem.</div><div class="guide-actions"><button class="secondary-button" id="restart" type="button">Recomeçar</button></div>`;
 }
 
 function render({focus=false}={}){
   drawGraph();updateScores();for(let index=0;index<3;index++){$(`step-${index}`).className=index<state.step?'done':index===state.step?'current':'';if(index===state.step)$(`step-${index}`).setAttribute('aria-current','step');else $(`step-${index}`).removeAttribute('aria-current')}
-  $('entenda').hidden=state.step!==2;
   $('guide').innerHTML=guideMarkup();
-  $('guide').querySelectorAll('[data-guess]').forEach(button=>button.addEventListener('click',()=>{state.guess=button.dataset.guess;for(const choice of $('guide').querySelectorAll('[data-guess]'))choice.setAttribute('aria-pressed',String(choice.dataset.guess===state.guess));$('next').disabled=false;$('guide').querySelector('.guide-hint').textContent=`Seu palpite: página ${state.guess}.`;}));
+  $('guide').querySelectorAll('[data-guess]').forEach(button=>button.addEventListener('click',()=>{state.guess=button.dataset.guess;for(const choice of $('guide').querySelectorAll('[data-guess]'))choice.setAttribute('aria-pressed',String(choice.dataset.guess===state.guess));$('next').disabled=false;}));
   $('next')?.addEventListener('click',()=>advance());$('restart')?.addEventListener('click',()=>{state.step=0;state.guess=null;render({focus:true})});
   if(focus){const heading=$('guide').querySelector('h3');heading.tabIndex=-1;heading.focus({preventScroll:true})}
 }
@@ -91,6 +121,6 @@ function advance(){
   flowTimer=setTimeout(()=>graph.classList.remove('network-flow'),4400);
 }
 function showError(error){$('guide').innerHTML=`<h3>Não foi possível carregar.</h3><p>${error.message}</p><div class="guide-actions"><button id="retry" class="primary-button" type="button">Tentar novamente</button></div>`;$('retry').onclick=load}
-async function load(){try{$('guide').innerHTML='<p class="guide-loading">Preparando a explicação…</p>';[state.original,state.changed]=await Promise.all([calculate(originalLinks),calculate(changedLinks)]);state.step=0;state.guess=null;render()}catch(error){showError(error)}}
+async function load(){try{$('guide').innerHTML='<p class="guide-loading">Preparando a explicação…</p>';[state.original,state.changed]=await Promise.all([calculate(originalLinks),calculate(changedLinks)]);state.step=0;state.guess=null;render();setupSearchExample()}catch(error){showError(error)}}
 addEventListener('resize',()=>drawGraph());
 load();

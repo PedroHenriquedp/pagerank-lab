@@ -4,13 +4,17 @@ Referências: [Frontend Design, da Anthropic](https://github.com/anthropics/skil
 
 **Objetivo:** explicar a ideia do PageRank por uma mudança observável na posição da página D. A pessoa realiza somente uma previsão e dois avanços. A interface apresenta uma ação principal por etapa.
 
-**Estrutura:** a primeira tela pergunta sobre importância e responde imediatamente o que é PageRank e como os links pesam. “Veja um exemplo” apresenta quatro páginas, explica as setas e pede um palpite. Em janelas largas, o grafo e a explicação ficam lado a lado; no celular, ficam em sequência. A síntese final aparece após o novo link e nomeia as ligações que produziram a ordem.
+**Estrutura:** a primeira tela pergunta sobre importância e responde imediatamente o que é PageRank e como os links pesam. “Veja um exemplo” apresenta quatro páginas, explica as setas e pede um palpite. Em janelas largas, o grafo e a explicação ficam lado a lado; no celular, ficam em sequência. A síntese dos links permanece visível abaixo do exemplo. Uma segunda visualização usa os mesmos quatro nós em uma lista fictícia de resultados de busca.
 
 **Cores e tipo:** Roboto, texto #202124, azul #1967d2 para ação, branco #ffffff para a página e #f8fafd para o grafo. Vermelho #ea4335, amarelo #fbbc04 e verde #34a853 aparecem na marca e na identificação das páginas. A tipografia cria a hierarquia sem títulos coloridos ou rótulos decorativos.
 
 **Critério editorial:** a abertura define o conceito antes de solicitar uma interação. Foi retirado o link redundante do cabeçalho, o rótulo “experiência interativa” e o grafo decorativo que duplicava o experimento. O único diagrama é a rede com a qual a pessoa trabalha.
 
 **Movimento com função:** após cada avanço, pontos nas cores das páginas percorrem os links no sentido das setas e as barras mostram a importância relativa subir ou descer. O grafo volta ao centro da tela para que o movimento seja visto também no celular. Os rótulos de posição, a descrição e a ordem em texto permitem entender o resultado sem depender da animação. Pessoas que preferem menos movimento veem os estados finais diretamente.
+
+**Resultados de busca:** a [galeria oficial de elementos visuais da Pesquisa Google](https://developers.google.com/search/docs/appearance/visual-elements-gallery) orienta a estrutura de fonte, endereço, título e resumo. Os quatro resultados usam domínios fictícios e não são links ativos. A mudança de posição usa a mesma ordem calculada para o grafo e pode ser repetida sem reiniciar a primeira experiência.
+
+**Ajustes de fluxo:** os nomes dos nós foram colocados em áreas sem arestas. As ações do guia seguem o conteúdo sem uma altura mínima ou um espaço automático, e a instrução redundante ao lado do botão foi removida.
 
 **Componentes:** escolha mutuamente exclusiva por botões com `aria-pressed`, ação principal preenchida, reinício secundário contornado, etapas com estado atual textual e ranking como lista. A cor nunca é o único indício de resultado: letras, setas, posição e texto permanecem visíveis.
 

@@ -29,6 +29,8 @@ A porta escuta apenas na própria VM por padrão. Veja [docs/proxmox.md](docs/pr
 2. **Descubra:** pontos coloridos percorrem as setas enquanto barras mostram a importância mudar. O site revela a ordem **C, A, B, D** e explica as indicações entre as páginas.
 3. **Compare:** um clique adiciona **C→D**. A barra de D sobe e a ordem vira **C, A, D, B**. O texto mostra por que C passou a dividir sua importância entre A e D.
 
+Logo abaixo, uma simulação de resultados de busca apresenta as mesmas páginas A, B, C e D com fonte, título e descrição. Um botão independente reproduz a mudança **C→D** e anima D subindo do quarto para o terceiro resultado. Os endereços `.example` são fictícios; a lista ilustra apenas a ordem calculada pelo grafo.
+
 A revisão de conteúdo e visual segue a [skill Frontend Design, da Anthropic](https://github.com/anthropics/skills/tree/main/skills/frontend-design), para priorizar o conceito, retirar decoração redundante e melhorar a hierarquia. A base de componentes continua alinhada ao [Material Design 3](https://m3.material.io/). As escolhas estão em [docs/design.md](docs/design.md).
 
 O exemplo é didático. PageRank mede importância na rede de links; relevância para uma consulta e qualidade do conteúdo exigem outros critérios. O site não reproduz a busca atual do Google.

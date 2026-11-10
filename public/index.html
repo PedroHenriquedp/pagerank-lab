@@ -33,7 +33,7 @@
       <div class="lab">
         <div class="network-area">
           <div class="network-header"><h3>Quem aponta para quem?</h3><span id="network-badge" class="network-badge">5 links</span></div>
-          <div class="graph-wrap"><svg id="network" viewBox="0 0 640 370" role="img" aria-label="Rede com quatro páginas e cinco links direcionados"></svg></div>
+          <div class="graph-wrap"><svg id="network" viewBox="0 0 640 390" role="img" aria-label="Rede com quatro páginas e cinco links direcionados"></svg></div>
           <div class="page-key" aria-label="Páginas da rede"><span><b class="key-a">A</b> Apostila</span><span><b class="key-b">B</b> Blog</span><span><b class="key-c">C</b> Portal</span><span><b class="key-d">D</b> Notas</span></div>
           <div class="scoreboard" aria-labelledby="scoreboard-title">
             <div class="scoreboard-heading"><h4 id="scoreboard-title">Importância de cada página</h4><p id="scoreboard-caption">No começo, todas têm a mesma importância.</p></div>
@@ -45,7 +45,23 @@
       </div>
     </section>
 
-    <section class="takeaway" id="entenda" aria-labelledby="takeaway-title" hidden><h2 id="takeaway-title">O que os links revelaram?</h2><div class="takeaway-grid"><div><b>1</b><h3>A e B apontam para C</h3><p>C recebe importância das duas páginas e fica em primeiro.</p></div><div><b>2</b><h3>C aponta para A</h3><p>A recebe uma indicação da página mais importante e fica em segundo.</p></div><div><b>3</b><h3>C passa a apontar para D</h3><p>C divide sua importância entre A e D. Com essa indicação, D sobe.</p></div></div><p class="model-note">O algoritmo repete essa troca de importância até a ordem se estabilizar. PageRank mede a posição na rede de links; a relevância para uma busca e a qualidade do conteúdo exigem outros critérios. Este exemplo não reproduz a busca atual do Google.</p></section>
+    <section class="takeaway" id="entenda" aria-labelledby="takeaway-title"><h2 id="takeaway-title">O que os links revelaram?</h2><div class="takeaway-grid"><div><b>1</b><h3>A e B apontam para C</h3><p>C recebe importância das duas páginas e fica em primeiro.</p></div><div><b>2</b><h3>C aponta para A</h3><p>A recebe uma indicação da página mais importante e fica em segundo.</p></div><div><b>3</b><h3>C passa a apontar para D</h3><p>C divide sua importância entre A e D. Com essa indicação, D sobe.</p></div></div><p class="model-note">O algoritmo repete essa troca de importância até a ordem se estabilizar. PageRank mede a posição na rede de links; a relevância para uma busca e a qualidade do conteúdo exigem outros critérios. Este exemplo não reproduz a busca atual do Google.</p></section>
+
+    <section class="search-example" aria-labelledby="search-example-title">
+      <div class="search-example-heading"><h2 id="search-example-title">E se essas páginas fossem resultados de busca?</h2><p>A, B, C e D são as mesmas páginas do grafo. Veja a ordem calculada pelos links e adicione C → D para observar D subir na lista.</p></div>
+      <div class="search-demo">
+        <div class="search-demo-top"><div class="google-mark" aria-label="Google"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div><div class="search-field"><span>materiais para estudar grafos</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m15.5 15.5 5 5"></path></svg></div></div>
+        <div class="search-tab"><span>Todos</span></div>
+        <p class="search-demo-note">Simulação didática · a posição usa apenas os links do grafo acima</p>
+        <div class="search-results" id="search-results" role="list" aria-label="Quatro resultados fictícios">
+          <article class="search-result" data-page="C" role="listitem"><div class="result-source"><span class="result-favicon">C</span><span><b>Portal de estudos</b><small>portal.example › grafos</small></span></div><h3>Portal de estudos — grafos e aplicações</h3><p>Guias e exemplos para aprender conceitos de grafos e entender onde eles aparecem.</p></article>
+          <article class="search-result" data-page="A" role="listitem"><div class="result-source"><span class="result-favicon">A</span><span><b>Apostila de grafos</b><small>apostila.example › grafos</small></span></div><h3>Apostila de grafos — conceitos essenciais</h3><p>Uma apostila com definições, diagramas e exercícios para começar a estudar grafos.</p></article>
+          <article class="search-result" data-page="B" role="listitem"><div class="result-source"><span class="result-favicon">B</span><span><b>Blog de algoritmos</b><small>blog.example › algoritmos</small></span></div><h3>Blog de algoritmos — caminhos e buscas</h3><p>Textos curtos sobre algoritmos em grafos, com exemplos de código e explicações.</p></article>
+          <article class="search-result" data-page="D" role="listitem"><div class="result-source"><span class="result-favicon">D</span><span><b>Notas de aula</b><small>notas.example › grafos</small></span></div><h3>Notas de aula — revisão de grafos</h3><p>Resumos de aula e questões para revisar os principais termos e problemas.</p></article>
+        </div>
+        <div class="search-demo-actions"><button class="primary-button" id="search-toggle" type="button" disabled>Adicionar C → D</button><p class="search-result-status" id="search-result-status" role="status">Ordem original: C, A, B, D.</p></div>
+      </div>
+    </section>
   </main>
   <footer>PageRank · Uma explicação visual sobre links e importância.</footer>
 </body>
