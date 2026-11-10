@@ -8,7 +8,7 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), 'public');
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.svg': 'image/svg+xml' };
 const port = Number(process.env.PORT || 4173);
 const host = process.env.HOST || '127.0.0.1';
-if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT deve ser um número entre 1 e 65535.');
+if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('PORT deve ser um número entre 0 e 65535.');
 
 const server = http.createServer(async (req, res) => {
   const send = (status, data, type = 'application/json; charset=utf-8') => {
@@ -38,5 +38,5 @@ const server = http.createServer(async (req, res) => {
     send(error instanceof SyntaxError || error.message?.includes('página') || error.message?.includes('link') || error.message?.includes('chance') ? 400 : 500, { error: error.message || 'Erro interno.' });
   }
 });
-server.listen(port, host, () => console.log(`Laboratório PageRank: http://${host}:${port}`));
+server.listen(port, host, () => console.log(`Laboratório PageRank: http://${host}:${server.address().port}`));
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => server.close(() => process.exit(0)));
