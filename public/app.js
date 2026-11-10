@@ -70,6 +70,7 @@ function guideMarkup(){
 
 function render({focus=false}={}){
   drawGraph();updateScores();for(let index=0;index<3;index++){$(`step-${index}`).className=index<state.step?'done':index===state.step?'current':'';if(index===state.step)$(`step-${index}`).setAttribute('aria-current','step');else $(`step-${index}`).removeAttribute('aria-current')}
+  $('entenda').hidden=state.step!==2;
   $('guide').innerHTML=guideMarkup();
   $('guide').querySelectorAll('[data-guess]').forEach(button=>button.addEventListener('click',()=>{state.guess=button.dataset.guess;for(const choice of $('guide').querySelectorAll('[data-guess]'))choice.setAttribute('aria-pressed',String(choice.dataset.guess===state.guess));$('next').disabled=false;$('guide').querySelector('.guide-hint').textContent=`Seu palpite: página ${state.guess}.`;}));
   $('next')?.addEventListener('click',()=>advance());$('restart')?.addEventListener('click',()=>{state.step=0;state.guess=null;render({focus:true})});

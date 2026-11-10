@@ -4,7 +4,7 @@ Referências: [Frontend Design, da Anthropic](https://github.com/anthropics/skil
 
 **Objetivo:** explicar a ideia do PageRank por uma mudança observável na posição da página D. A pessoa realiza somente uma previsão e dois avanços. A interface apresenta uma ação principal por etapa.
 
-**Estrutura:** a primeira tela pergunta sobre importância e responde imediatamente o que é PageRank e como os links pesam. “Veja um exemplo” apresenta quatro páginas, explica as setas e pede um palpite. Em janelas largas, o grafo e a explicação ficam lado a lado; no celular, ficam em sequência. A síntese final nomeia as ligações que produziram a ordem.
+**Estrutura:** a primeira tela pergunta sobre importância e responde imediatamente o que é PageRank e como os links pesam. “Veja um exemplo” apresenta quatro páginas, explica as setas e pede um palpite. Em janelas largas, o grafo e a explicação ficam lado a lado; no celular, ficam em sequência. A síntese final aparece após o novo link e nomeia as ligações que produziram a ordem.
 
 **Cores e tipo:** Roboto, texto #202124, azul #1967d2 para ação, branco #ffffff para a página e #f8fafd para o grafo. Vermelho #ea4335, amarelo #fbbc04 e verde #34a853 aparecem na marca e na identificação das páginas. A tipografia cria a hierarquia sem títulos coloridos ou rótulos decorativos.
 
