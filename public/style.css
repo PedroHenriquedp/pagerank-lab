@@ -10,3 +10,74 @@
 @media(max-width:380px){.header-link{max-width:100px;text-align:right}.stepper li strong{font-size:10px}.comparison strong{font-size:15px}.network-badge{font-size:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.network-flow .edge{animation:none}.rank-bar i,.choice{transition:none}}
 .header-link{min-height:48px;display:flex;align-items:center}.key-a{color:#174ea6}.key-b{color:#b3261e}.key-c{color:#137333}.key-d{color:#795900}.art-c{color:#188038}.art-d{color:#795900}.rank-list li{grid-template-columns:23px 24px minmax(0,1fr)}
+
+/* A explicação vem antes da simulação. O grafo real é o único elemento ilustrado. */
+.brand-line{display:none}
+.site-header{height:76px;max-width:1180px;border-bottom:1px solid var(--outline-variant)}
+.wordmark{font-size:26px}
+.hero{max-width:1180px;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:76px;padding:82px 40px 92px;align-items:start}
+.hero h1{font-size:clamp(42px,4.8vw,65px);line-height:1.08;letter-spacing:-2.4px;max-width:680px;margin:0}
+.hero-explanation{border-left:4px solid var(--blue);padding-left:26px;margin-top:6px;max-width:460px}
+.hero-explanation p{margin:0;color:var(--on-surface-variant);font-size:17px;line-height:1.56}
+.hero-explanation p:first-child{color:var(--on-surface);font-size:21px;line-height:1.43;margin-bottom:18px}
+.hero-explanation strong{font-weight:700}
+.experience{max-width:1180px;padding:0 40px 84px}
+.experience-heading{align-items:baseline;margin-bottom:28px}
+.experience-heading h2{font-size:clamp(28px,2.8vw,35px);letter-spacing:-.9px;margin:0}
+.experience-heading>p{max-width:320px;font-size:15px}
+.stepper{gap:0;margin-bottom:22px}
+.stepper li{padding:13px 10px 14px 0;font-size:13px}
+.stepper li strong{font-weight:700}
+.stepper li span{width:26px;height:26px}
+.lab{border-radius:18px;grid-template-columns:minmax(0,1.25fr) minmax(350px,.85fr)}
+.network-area{background:#f8fafd;padding:32px 26px 26px}
+.network-header h3{font-size:20px;margin:0}
+.network-badge{background:#e8f0fe;color:#174ea6}
+.guide-area{padding:36px 33px 30px}
+.guide-kicker{font-size:13px;letter-spacing:0;color:var(--primary);font-weight:700;margin-bottom:14px}
+.guide-area h3{font-size:clamp(26px,2.2vw,32px);line-height:1.2}
+.choice{border-radius:9px;box-shadow:none}
+.choice:hover{background:#f8fafd}
+.primary-button,.secondary-button{border-radius:9px}
+.mini-explain{border-radius:9px;background:#e8f0fe}
+.comparison>div{border-radius:9px}
+.takeaway{max-width:1100px;margin:0 auto;padding:62px 40px 58px;background:white;border-top:1px solid var(--outline-variant)}
+.takeaway h2{font-size:clamp(27px,2.8vw,36px);margin:0 0 36px;letter-spacing:-.8px}
+.takeaway-grid{gap:30px}
+.takeaway-grid>div{border-top:2px solid var(--outline-variant);padding-top:18px}
+.takeaway-grid b{font-size:15px;color:var(--primary)}
+.takeaway-grid h3{font-size:18px;margin:13px 0 8px}
+.takeaway-grid p{font-size:15px;line-height:1.55}
+.model-note{border-top:1px solid var(--outline-variant);margin-top:43px;padding-top:20px;font-size:13px;max-width:850px}
+footer{border-top:1px solid var(--outline-variant);padding:24px}
+@media(max-width:950px){
+  .hero{grid-template-columns:1fr 1fr;gap:35px;padding:65px 40px 75px}
+  .hero h1{font-size:clamp(41px,5vw,54px)}
+  .hero-explanation p:first-child{font-size:18px}
+  .hero-explanation p{font-size:15px}
+  .lab{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .site-header{height:64px;padding:0 22px}
+  .hero{display:block;padding:48px 22px 60px}
+  .hero h1{font-size:clamp(37px,9.4vw,51px);letter-spacing:-1.8px;max-width:580px}
+  .hero-explanation{margin-top:29px;padding-left:19px}
+  .hero-explanation p:first-child{font-size:18px;margin-bottom:12px}
+  .hero-explanation p{font-size:15px}
+  .experience{padding:0 16px 60px}
+  .experience-heading{display:block;margin:0 6px 21px}
+  .experience-heading h2{font-size:28px}
+  .experience-heading>p{margin-top:9px;max-width:490px;font-size:14px}
+  .stepper{margin-bottom:14px}
+  .stepper li{padding:10px 2px;gap:5px;font-size:11px}
+  .stepper li strong{font-size:11px}
+  .lab{border-radius:14px}
+  .network-area{padding:23px 14px 20px}
+  .guide-area{padding:27px 21px 28px}
+  .takeaway{padding:50px 22px}
+  .takeaway h2{font-size:28px;margin-bottom:24px}
+  .takeaway-grid{gap:20px}
+  .takeaway-grid>div{padding-top:12px}
+  .model-note{margin-top:30px}
+}
+@media(max-width:380px){.stepper li strong{font-size:10px}}

@@ -1,12 +1,14 @@
 # Decisões de design
 
-Referências: [Material Design 3 UI/UX Skill](https://github.com/skydashnet/material-design-3-ui-skill) e [Material Design 3](https://m3.material.io/).
+Referências: [Frontend Design, da Anthropic](https://github.com/anthropics/skills/tree/main/skills/frontend-design), [Material Design 3 UI/UX Skill](https://github.com/skydashnet/material-design-3-ui-skill) e [Material Design 3](https://m3.material.io/).
 
 **Objetivo:** explicar a ideia do PageRank por uma mudança observável na posição da página D. A pessoa realiza somente uma previsão e dois avanços. A interface apresenta uma ação principal por etapa.
 
-**Estrutura:** título curto, indicação das três etapas, grafo e explicação lado a lado em janelas largas; grafo acima da explicação em janelas estreitas. A explicação conceitual vem depois do experimento.
+**Estrutura:** a primeira tela pergunta sobre importância e responde imediatamente o que é PageRank e como os links pesam. Abaixo, três etapas conduzem à rede real. Em janelas largas, o grafo e a explicação ficam lado a lado; no celular, ficam em sequência. A síntese final descreve o ciclo do algoritmo.
 
-**Cores e tipo:** Roboto, azul como cor primária da ação, tons claros de superfície para separar o grafo da narrativa e cores do Google reservadas à marca e à identificação das páginas. Controles e estados usam nomes de função no CSS (`primary`, `surface`, `on-surface`, `outline-variant`).
+**Cores e tipo:** Roboto, texto #202124, azul #1967d2 para ação, branco #ffffff para a página e #f8fafd para o grafo. Vermelho #ea4335, amarelo #fbbc04 e verde #34a853 aparecem na marca e na identificação das páginas. A tipografia cria a hierarquia sem títulos coloridos ou rótulos decorativos.
+
+**Critério editorial:** a abertura define o conceito antes de solicitar uma interação. Foi retirado o link redundante do cabeçalho, o rótulo “experiência interativa” e o grafo decorativo que duplicava o experimento. O único diagrama é a rede com a qual a pessoa trabalha.
 
 **Componentes:** escolha mutuamente exclusiva por botões com `aria-pressed`, ação principal preenchida, reinício secundário contornado, etapas com estado atual textual e ranking como lista. A cor nunca é o único indício de resultado: letras, setas, posição e texto permanecem visíveis.
 
