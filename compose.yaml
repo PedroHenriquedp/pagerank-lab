@@ -1,0 +1,13 @@
+services:
+  pagerank-lab:
+    build: .
+    container_name: pagerank-lab
+    restart: unless-stopped
+    ports:
+      - "${PAGERANK_BIND:-127.0.0.1}:${PAGERANK_PORT:-4173}:4173"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 4173
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
