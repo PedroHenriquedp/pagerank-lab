@@ -1,6 +1,6 @@
 # Como funciona o PageRank
 
-Site que define o PageRank logo na abertura e explica a ideia em **três passos**: observar uma pequena rede de páginas, prever o primeiro lugar e comparar o resultado depois de mudar um link. Não há fórmulas nem controles avançados na interface.
+Site que define o PageRank logo na abertura e explica a ideia com um exemplo em **três passos**: observar quatro páginas fictícias e seus links, prever a mais importante e ver como um novo link muda a ordem. Não há fórmulas nem controles avançados na interface.
 
 ## Rodar no Windows
 
@@ -25,9 +25,9 @@ A porta escuta apenas na própria VM por padrão. Veja [docs/proxmox.md](docs/pr
 
 ## A experiência
 
-1. **Observe:** a pessoa vê quatro páginas fictícias e cinco links. Escolhe qual página imagina que ficará em primeiro lugar.
-2. **Descubra:** o site revela a ordem **C, A, B, D** e explica que as páginas compartilham importância pelos links repetidamente.
-3. **Compare:** um clique adiciona **C→D**. D sobe para o terceiro lugar. A pessoa pode recomeçar.
+1. **Observe:** a pessoa vê quatro páginas fictícias e cinco links. Escolhe qual ficará em primeiro lugar.
+2. **Descubra:** pontos coloridos percorrem as setas enquanto barras mostram a importância mudar. O site revela a ordem **C, A, B, D** e explica as indicações entre as páginas.
+3. **Compare:** um clique adiciona **C→D**. A barra de D sobe e a ordem vira **C, A, D, B**. O texto mostra por que C passou a dividir sua importância entre A e D.
 
 A revisão de conteúdo e visual segue a [skill Frontend Design, da Anthropic](https://github.com/anthropics/skills/tree/main/skills/frontend-design), para priorizar o conceito, retirar decoração redundante e melhorar a hierarquia. A base de componentes continua alinhada ao [Material Design 3](https://m3.material.io/). As escolhas estão em [docs/design.md](docs/design.md).
 

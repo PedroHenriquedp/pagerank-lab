@@ -27,7 +27,7 @@
     </section>
 
     <section class="experience" aria-labelledby="experience-title">
-      <div class="experience-heading"><h2 id="experience-title">Veja acontecer em três passos</h2><p>Use esta pequena rede de quatro páginas para ver como os links mudam a ordem.</p></div>
+      <div class="experience-heading"><h2 id="experience-title">Veja um exemplo</h2><p>Estas quatro páginas fictícias têm links entre si. Cada seta mostra uma página indicando outra. Dê um palpite sobre qual ficará em primeiro e veja como um novo link muda a ordem.</p></div>
       <ol class="stepper" aria-label="Etapas da explicação"><li id="step-0" class="current"><span>1</span><strong>Observe os links</strong></li><li id="step-1"><span>2</span><strong>Veja a ordem</strong></li><li id="step-2"><span>3</span><strong>Mude um link</strong></li></ol>
 
       <div class="lab">
@@ -35,12 +35,17 @@
           <div class="network-header"><h3>Quem aponta para quem?</h3><span id="network-badge" class="network-badge">5 links</span></div>
           <div class="graph-wrap"><svg id="network" viewBox="0 0 640 370" role="img" aria-label="Rede com quatro páginas e cinco links direcionados"></svg></div>
           <div class="page-key" aria-label="Páginas da rede"><span><b class="key-a">A</b> Apostila</span><span><b class="key-b">B</b> Blog</span><span><b class="key-c">C</b> Portal</span><span><b class="key-d">D</b> Notas</span></div>
+          <div class="scoreboard" aria-labelledby="scoreboard-title">
+            <div class="scoreboard-heading"><h4 id="scoreboard-title">Importância de cada página</h4><p id="scoreboard-caption">No começo, todas têm a mesma importância.</p></div>
+            <div class="score-bars" aria-hidden="true"><div class="score-column" data-page="A"><span class="score-position">=</span><span class="score-track"><span class="score-fill"></span></span><b>A</b></div><div class="score-column" data-page="B"><span class="score-position">=</span><span class="score-track"><span class="score-fill"></span></span><b>B</b></div><div class="score-column" data-page="C"><span class="score-position">=</span><span class="score-track"><span class="score-fill"></span></span><b>C</b></div><div class="score-column" data-page="D"><span class="score-position">=</span><span class="score-track"><span class="score-fill"></span></span><b>D</b></div></div>
+            <p id="scoreboard-summary" class="visually-hidden" aria-live="polite">Todas as páginas começam iguais.</p>
+          </div>
         </div>
         <div class="guide-area" id="guide" aria-live="polite"><p class="guide-loading">Preparando a experiência…</p></div>
       </div>
     </section>
 
-    <section class="takeaway" id="entenda" aria-labelledby="takeaway-title"><h2 id="takeaway-title">Como o algoritmo chega à ordem?</h2><div class="takeaway-grid"><div><b>1</b><h3>Começa igual</h3><p>Todas as páginas recebem a mesma importância no início.</p></div><div><b>2</b><h3>Passa adiante</h3><p>Cada página compartilha sua importância com os destinos dos seus links.</p></div><div><b>3</b><h3>Repete</h3><p>A troca continua até que a ordem quase não mude mais.</p></div></div><p class="model-note">PageRank mede importância na rede de links. A relevância para uma busca e a qualidade do conteúdo exigem outros critérios. Esta é uma visualização didática, não a busca atual do Google.</p></section>
+    <section class="takeaway" id="entenda" aria-labelledby="takeaway-title"><h2 id="takeaway-title">O que os links revelaram?</h2><div class="takeaway-grid"><div><b>1</b><h3>A e B apontam para C</h3><p>C recebe importância das duas páginas e fica em primeiro.</p></div><div><b>2</b><h3>C aponta para A</h3><p>A recebe uma indicação da página mais importante e fica em segundo.</p></div><div><b>3</b><h3>C passa a apontar para D</h3><p>C divide sua importância entre A e D. Com essa indicação, D sobe.</p></div></div><p class="model-note">O algoritmo repete essa troca de importância até a ordem se estabilizar. PageRank mede a posição na rede de links; a relevância para uma busca e a qualidade do conteúdo exigem outros critérios. Este exemplo não reproduz a busca atual do Google.</p></section>
   </main>
   <footer>PageRank · Uma explicação visual sobre links e importância.</footer>
 </body>

@@ -24,7 +24,7 @@ export function simulate(pages, links, damping = 0.85) {
   for (const e of links) outgoing[index.get(e.from)].push(index.get(e.to));
   let current = Array(n).fill(1 / n);
   const history = [{ scores: current, delta: 0 }];
-  for (let round = 1; round <= 100; round++) {
+  for (let round = 1; round <= 300; round++) {
     const next = Array(n).fill((1 - damping) / n);
     for (let i = 0; i < n; i++) {
       if (!outgoing[i].length) {

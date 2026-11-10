@@ -3,11 +3,19 @@ import assert from 'node:assert/strict';
 import { simulate } from '../pagerank.js';
 
 const pages = ['A', 'B', 'C', 'D'].map(id => ({ id }));
-const links = [['A','B'],['A','C'],['B','C'],['C','A'],['D','C']].map(([from,to]) => ({ from, to }));
+const links = [['A','C'],['B','C'],['C','A'],['D','A'],['D','B']].map(([from,to]) => ({ from, to }));
 
 test('a rede dos slides converge na ordem esperada e preserva a soma', () => {
   const result = simulate(pages, links);
   assert.deepEqual(result.order.map(i => pages[i].id), ['C','A','B','D']);
+  const changed = simulate(pages, [...links, { from: 'C', to: 'D' }]);
+  assert.deepEqual(changed.order.map(i => pages[i].id), ['C','A','D','B']);
+  for (const run of [result, changed]) {
+    const scores = run.history.at(-1).scores;
+    for (let rank = 1; rank < run.order.length; rank++) {
+      assert.ok(scores[run.order[rank - 1]] > scores[run.order[rank]]);
+    }
+  }
   assert.ok(result.converged);
   for (const round of result.history) assert.ok(Math.abs(round.scores.reduce((a,b) => a+b,0)-1)<1e-12);
 });
