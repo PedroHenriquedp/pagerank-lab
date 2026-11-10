@@ -4,48 +4,44 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Explore como os links entre páginas mudam o PageRank em um laboratório interativo.">
-  <title>Laboratório PageRank</title>
+  <meta name="description" content="Entenda o PageRank em três passos: observe os links, veja o resultado e mude uma conexão.">
+  <title>Como funciona o PageRank</title>
   <link rel="stylesheet" href="/style.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#inicio" aria-label="Laboratório PageRank, início"><span class="google"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></span><span class="brand-divider"></span><strong>Laboratório PageRank</strong></a>
-    <div class="top-actions"><span class="live-dot"></span><span>Simulação didática</span><a href="#entenda" class="help-link">Como funciona <span aria-hidden="true">↗</span></a></div>
+  <div class="brand-line" aria-hidden="true"></div>
+  <header class="site-header">
+    <a href="#inicio" class="wordmark" aria-label="PageRank, início"><span>P</span><span>a</span><span>g</span><span>e</span><span>R</span><span>a</span><span>n</span><span>k</span></a>
+    <a class="header-link" href="#entenda">O que é PageRank <span aria-hidden="true">↗</span></a>
   </header>
 
   <main id="inicio">
-    <section class="hero">
-      <div class="eyebrow"><span class="sparkle">✦</span> SEMINÁRIO DE GRAFOS <span class="eyebrow-line"></span> EXPERIMENTO INTERATIVO</div>
-      <h1>Quem aparece <span class="blue">primeiro</span><span class="red">?</span></h1>
-      <p>Mude os links de uma rede, acompanhe a importância circulando e descubra como a ordem das páginas se forma.</p>
-      <div class="search-wrap">
-        <div class="searchbar"><span class="search-icon" aria-hidden="true">⌕</span><input id="query" type="search" placeholder="Pesquise qualquer tema desta rede..." aria-label="Pesquisar páginas da rede"><button id="clearQuery" class="icon-button" title="Limpar pesquisa" aria-label="Limpar pesquisa">×</button><span class="search-divider"></span><button id="searchButton" class="search-submit" aria-label="Mostrar resultados">⌕</button></div>
-        <div class="suggestions">Experimente: <button data-query="grafos">grafos</button><button data-query="busca">busca</button><button data-query="viagens">viagens</button><button data-query="receitas">receitas</button></div>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> UMA EXPERIÊNCIA INTERATIVA</p>
+        <h1 id="hero-title">Como uma página se torna <em>importante?</em></h1>
+        <p class="hero-description">O PageRank observa as conexões entre páginas. Faça uma previsão, veja o resultado e mude um link para entender a ideia.</p>
+      </div>
+      <div class="hero-art" aria-hidden="true"><span class="art-link art-link-one"></span><span class="art-link art-link-two"></span><span class="art-link art-link-three"></span><span class="art-node art-a">A</span><span class="art-node art-b">B</span><span class="art-node art-c">C</span><span class="art-node art-d">D</span></div>
+    </section>
+
+    <section class="experience" aria-labelledby="experience-title">
+      <div class="experience-heading"><div><p class="section-label">APRENDA FAZENDO</p><h2 id="experience-title">Três passos. Uma descoberta.</h2></div><p>Uma rede fictícia de quatro páginas é suficiente para perceber como o algoritmo funciona.</p></div>
+      <ol class="stepper" aria-label="Etapas da experiência"><li id="step-0" class="current"><span>1</span><strong>Observe</strong></li><li id="step-1"><span>2</span><strong>Descubra</strong></li><li id="step-2"><span>3</span><strong>Compare</strong></li></ol>
+
+      <div class="lab">
+        <div class="network-area">
+          <div class="network-header"><div><p class="section-label">REDE DE PÁGINAS</p><h3>Quem aponta para quem?</h3></div><span id="network-badge" class="network-badge">5 links</span></div>
+          <div class="graph-wrap"><svg id="network" viewBox="0 0 640 370" role="img" aria-label="Rede com quatro páginas e cinco links direcionados"></svg></div>
+          <div class="page-key" aria-label="Páginas da rede"><span><b class="key-a">A</b> Apostila</span><span><b class="key-b">B</b> Blog</span><span><b class="key-c">C</b> Portal</span><span><b class="key-d">D</b> Notas</span></div>
+        </div>
+        <div class="guide-area" id="guide" aria-live="polite"><p class="guide-loading">Preparando a experiência…</p></div>
       </div>
     </section>
 
-    <section class="workspace" aria-label="Simulador PageRank">
-      <div class="section-heading"><div><div class="overline">EXPLORE A REDE</div><h2>O laboratório</h2></div><p>Selecione uma página e use o painel ao lado para criar ou remover seus links.</p></div>
-      <div class="toolbar"><div class="toolbar-left"><label for="preset">Cenário</label><select id="preset"><option value="diversa">Web diversa</option><option value="seminario">Exemplo dos slides: A–D</option></select><span class="toolbar-separator"></span><button id="addPage" class="button small" type="button"><span aria-hidden="true">＋</span> Nova página</button><button id="reset" class="button small ghost" type="button">↺ Restaurar</button></div><div class="toolbar-right"><span id="networkCount">0 páginas · 0 links</span></div></div>
-
-      <div class="main-grid">
-        <div class="graph-panel panel"><div class="panel-head"><div><span class="panel-kicker"><span class="mini-dot blue-bg"></span> VISUALIZAÇÃO</span><h3>Rede de páginas</h3></div><span class="panel-tip">Clique para selecionar</span></div><div class="graph-stage"><svg id="graph" viewBox="0 0 680 440" role="img" aria-label="Grafo direcionado das páginas"></svg><div id="emptyGraph" hidden>Adicione uma página para começar.</div></div><div class="graph-foot"><span><i class="legend-line"></i> Link</span><span><i class="legend-node"></i> Página</span><span id="selectionHint">Selecione uma página para ver seus links.</span></div></div>
-        <aside class="inspector panel"><div class="panel-head"><div><span class="panel-kicker"><span class="mini-dot red-bg"></span> EDITE E COMPARE</span><h3>Página selecionada</h3></div></div><div id="inspectorContent" class="inspector-content"></div></aside>
-      </div>
-
-      <div class="analysis-grid">
-        <section class="simulation panel"><div class="panel-head"><div><span class="panel-kicker"><span class="mini-dot yellow-bg"></span> PASSO A PASSO</span><h3>A importância em movimento</h3></div><span id="roundBadge" class="round-badge">Rodada 0</span></div><div class="step-text"><div id="stepTitle">Todas as páginas começam iguais.</div><p id="stepDetail">A importância será distribuída pelos links da rede.</p></div><div class="playback"><button id="stepBack" class="round-button" aria-label="Voltar uma rodada">‹</button><button id="play" class="play-button" aria-label="Reproduzir rodadas">▶ <span>Reproduzir</span></button><button id="stepForward" class="round-button" aria-label="Avançar uma rodada">›</button><input id="timeline" type="range" min="0" max="1" value="0" aria-label="Escolher rodada"><button id="finish" class="button small" type="button">Ver resultado</button></div><div class="slider-row"><label for="damping">Chance de seguir um link <strong id="dampingValue">85%</strong></label><input id="damping" type="range" min="0" max="100" value="85" aria-label="Chance de seguir um link"><p>Quando não segue um link, o visitante salta para qualquer página. Páginas sem saída também redistribuem sua importância.</p></div></section>
-        <section class="ranking panel"><div class="panel-head"><div><span class="panel-kicker"><span class="mini-dot green-bg"></span> RESULTADOS</span><h3>Quem está na frente?</h3></div><span class="ranking-note">Para a busca atual</span></div><div id="rankingList" class="ranking-list" aria-live="polite"></div><div class="ranking-foot">A consulta filtra as páginas pelo texto. O PageRank ordena as páginas encontradas neste modelo didático.</div></section>
-      </div>
-    </section>
-
-    <section id="entenda" class="explain"><div><span class="overline">A IDEIA EM UMA FRASE</span><h2>Um link é uma <span class="blue">recomendação</span>.<br>Mas quem recomenda também importa.</h2></div><div class="explain-cards"><article><span class="number blue">01</span><h3>Conecte</h3><p>As páginas são vértices. Cada seta representa um link com direção.</p></article><article><span class="number red">02</span><h3>Distribua</h3><p>Cada página passa parte da sua importância às páginas para as quais aponta.</p></article><article><span class="number green">03</span><h3>Repita</h3><p>As rodadas continuam até as pontuações praticamente pararem de mudar.</p></article></div><p class="disclaimer">Este laboratório ilustra o PageRank. Ele não reproduz a busca atual do Google, que usa muitos outros critérios.</p></section>
+    <section class="takeaway" id="entenda" aria-labelledby="takeaway-title"><p class="section-label">A IDEIA POR TRÁS DO RESULTADO</p><h2 id="takeaway-title">Um link funciona como uma <span>recomendação.</span></h2><div class="takeaway-grid"><div><b>01</b><h3>Começar</h3><p>Todas as páginas recebem a mesma importância no início.</p></div><div><b>02</b><h3>Distribuir</h3><p>Cada página compartilha sua importância com os destinos dos seus links.</p></div><div><b>03</b><h3>Repetir</h3><p>O processo continua até a ordem quase não mudar mais.</p></div></div><p class="model-note">PageRank mede importância na rede de links. A relevância para uma busca e a qualidade do conteúdo exigem outros critérios. Esta é uma visualização didática, não a busca atual do Google.</p></section>
   </main>
-
-  <dialog id="pageDialog"><form id="pageForm" method="dialog"><div class="dialog-top"><div><span class="overline">CRIE UM NOVO VÉRTICE</span><h2>Nova página</h2></div><button id="closeDialog" class="icon-button" type="button" aria-label="Fechar">×</button></div><label>Nome da página<input id="pageTitle" maxlength="48" required placeholder="Ex.: Guia de trilhas"></label><label>Descrição curta<textarea id="pageDescription" maxlength="150" rows="3" required placeholder="O que alguém encontraria nesta página?"></textarea></label><label>Temas ou palavras-chave<input id="pageTags" maxlength="90" placeholder="Ex.: viagem, natureza, trilhas"></label><div class="dialog-actions"><button class="button ghost" type="button" id="cancelDialog">Cancelar</button><button class="button primary" type="submit">Adicionar à rede</button></div></form></dialog>
-  <div id="toast" role="status" aria-live="polite"></div>
-  <footer>Laboratório PageRank <span>·</span> Seminário de Grafos <span>·</span> UFABC</footer>
+  <footer>PageRank · Entenda a ideia, experimente a mudança.</footer>
 </body>
 </html>

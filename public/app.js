@@ -1,68 +1,62 @@
+const pages = [
+  { id: 'A', name: 'Apostila de grafos', color: '#1967d2' },
+  { id: 'B', name: 'Blog de algoritmos', color: '#b3261e' },
+  { id: 'C', name: 'Portal de estudos', color: '#137333' },
+  { id: 'D', name: 'Notas de aula', color: '#795900' }
+];
+const originalLinks = [['A','B'],['A','C'],['B','C'],['C','A'],['D','C']].map(([from,to])=>({from,to}));
+const changedLinks = [...originalLinks,{from:'C',to:'D'}];
+const state = { step:0, guess:null, original:null, changed:null };
 const $ = id => document.getElementById(id);
-const colors = ['#4285f4','#ea4335','#fbbc05','#34a853','#a142f4','#00acc1','#f57c00','#5f6368','#d81b60','#2e7d32','#3949ab','#795548'];
-const presets = {
-  diversa: {
-    pages: [
-      ['A','Grafos em 5 minutos','Uma introdução visual a vértices, arestas e caminhos.','grafos matemática estudo'],
-      ['B','Como funcionam as buscas','Entenda como buscadores encontram e organizam páginas.','busca tecnologia internet'],
-      ['C','Algoritmos para aprender','Ideias de algoritmos, redes e programação para iniciantes.','algoritmos grafos tecnologia estudo'],
-      ['D','Viagens de fim de semana','Ideias de destinos, trilhas e roteiros curtos.','viagens trilhas turismo'],
-      ['E','Receitas para compartilhar','Pratos simples, ingredientes e dicas de cozinha.','receitas comida cozinha'],
-      ['F','Música e criatividade','Uma seleção de artistas, sons e cultura digital.','música arte cultura'],
-      ['G','Mapas e trajetos','Como encontrar caminhos em cidades e redes.','mapas grafos viagens caminhos'],
-      ['H','Ciência no cotidiano','Experimentos, perguntas e descobertas sobre o mundo.','ciência estudo tecnologia']
-    ].map(([id,title,description,tags])=>({id,title,description,tags})),
-    links: [['A','C'],['A','G'],['B','A'],['B','C'],['C','A'],['C','G'],['D','G'],['D','E'],['E','D'],['F','H'],['G','A'],['G','D'],['H','B'],['H','C']].map(([from,to])=>({from,to}))
-  },
-  seminario: {
-    pages: [
-      ['A','Apostila de grafos','Uma apostila com conceitos básicos e exemplos.','grafos estudo matemática'],
-      ['B','Blog de algoritmos','Textos curtos sobre algoritmos e programação.','grafos algoritmos tecnologia'],
-      ['C','Portal de teoria dos grafos','Guias e explicações sobre redes e caminhos.','grafos redes estudo'],
-      ['D','Notas de aula','Anotações sobre grafos e aplicações.','grafos aula matemática']
-    ].map(([id,title,description,tags])=>({id,title,description,tags})),
-    links: [['A','B'],['A','C'],['B','C'],['C','A'],['D','C']].map(([from,to])=>({from,to}))
+const svgNS = 'http://www.w3.org/2000/svg';
+
+async function calculate(links){
+  const response = await fetch('/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pages:pages.map(({id})=>({id})),links,damping:.85})});
+  if(!response.ok) throw new Error('A simulação não respondeu. Atualize a página e tente novamente.');
+  const result = await response.json();
+  return { order:result.order.map(index=>pages[index].id),scores:result.history.at(-1).scores };
+}
+
+function svg(tag,attributes,parent){const node=document.createElementNS(svgNS,tag);for(const [key,value] of Object.entries(attributes))node.setAttribute(key,value);parent.append(node);return node}
+function drawGraph(){
+  const root=$('network');root.replaceChildren();const defs=svg('defs',{},root);
+  for(const [id,color] of [['arrow','#a9b7c9'],['arrow-active','#1967d2'],['arrow-new','#34a853']]){
+    const marker=svg('marker',{id,viewBox:'0 0 10 10',refX:'9',refY:'5',markerWidth:'8',markerHeight:'8',orient:'auto'},defs);
+    svg('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:color},marker);
   }
-};
-const clone = x => structuredClone(x);
-const saved = (()=>{try{return JSON.parse(localStorage.getItem('pagerank-lab-v1'))}catch{return null}})();
-const state = { preset: saved?.preset in presets ? saved.preset : 'diversa', pages: clone(saved?.pages || presets.diversa.pages), links: clone(saved?.links || presets.diversa.links), damping: Number.isFinite(saved?.damping) ? saved.damping : .85, selected: null, history: [], round: 0, playing: null, request: 0, query: '', edit: false };
-if (state.pages.length < 2 || state.pages.length > 12) Object.assign(state,{pages:clone(presets.diversa.pages),links:clone(presets.diversa.links)});
-const escapeHTML = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const color = id => colors[Math.max(0,state.pages.findIndex(p=>p.id===id))%colors.length];
-const save = () => {try{localStorage.setItem('pagerank-lab-v1',JSON.stringify({preset:state.preset,pages:state.pages,links:state.links,damping:state.damping}))}catch{}};
-let toastTimer;
-function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3000)}
-function stop(){if(state.playing){clearInterval(state.playing);state.playing=null}$('play').innerHTML='▶ <span>Reproduzir</span>'}
-async function recalculate({toEnd=false}={}){
-  stop();const request=++state.request;
-  try{
-    const response=await fetch('/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pages:state.pages,links:state.links,damping:state.damping})});
-    const data=await response.json();if(!response.ok)throw new Error(data.error || 'Erro na simulação.');if(request!==state.request)return;
-    state.history=data.history;state.round=toEnd ? data.history.length-1 : 0;save();render();
-  }catch(error){if(request!==state.request)return;toast(error.message);console.error(error)}
+  const edges=[
+    ['A','B','M 130 157 Q 196 94 263 79'],
+    ['A','C','M 137 176 L 495 176'],
+    ['B','C','M 335 84 Q 422 108 503 156'],
+    ['C','A','M 504 195 Q 319 270 134 196'],
+    ['D','C','M 336 290 Q 421 265 503 196']
+  ];
+  if(state.step===2)edges.push(['C','D','M 504 199 Q 454 325 338 310']);
+  for(const [from,to,d] of edges){const fresh=from==='C'&&to==='D';const active=state.step>0&&(to==='C'||fresh);const path=svg('path',{d,class:`edge${fresh?' new':active?' changed':''}`,'marker-end':`url(#${fresh?'arrow-new':active?'arrow-active':'arrow'})`},root);svg('title',{},path).textContent=`${from} aponta para ${to}`}
+  const points={A:[96,176],B:[300,66],C:[540,176],D:[300,306]};
+  for(const page of pages){const [x,y]=points[page.id];const group=svg('g',{class:`graph-node${state.step>0&&page.id==='C'?' winner':''}${state.step===2&&page.id==='D'?' promoted':''}`},root);svg('circle',{class:'halo',cx:x,cy:y,r:'42'},group);svg('circle',{class:'disc',cx:x,cy:y,r:'36',fill:page.color},group);svg('text',{class:'letter',x,y:y+2,fill:page.color},group).textContent=page.id;if(innerWidth>680)svg('text',{class:'node-title',x,y:y+64},group).textContent=page.name}
+  $('network-badge').textContent=state.step===2?'6 links · 1 novo':'5 links';
+  root.setAttribute('aria-label',state.step===2?'Rede de quatro páginas; o novo link C para D está em verde.':'Rede de quatro páginas com links A para B e C, B para C, C para A e D para C.');
 }
-function changePreset(name){state.preset=name;state.pages=clone(presets[name].pages);state.links=clone(presets[name].links);state.selected=null;state.edit=false;state.query='';$('query').value='';recalculate()}
-function positions(){const n=state.pages.length,cx=340,cy=220,rx=n<=4?198:250,ry=n<=4?135:166;return state.pages.map((p,i)=>({id:p.id,x:cx+rx*Math.cos(-Math.PI/2+i*2*Math.PI/n),y:cy+ry*Math.sin(-Math.PI/2+i*2*Math.PI/n)}))}
-const svgNS='http://www.w3.org/2000/svg';
-function element(tag,attrs={},parent){const el=document.createElementNS(svgNS,tag);for(const [key,value] of Object.entries(attrs))el.setAttribute(key,String(value));parent.append(el);return el}
-function renderGraph(){
-  const svg=$('graph');svg.replaceChildren();const defs=element('defs',{},svg);const marker=element('marker',{id:'arrow',viewBox:'0 0 10 10',refX:'9',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto-start-reverse'},defs);element('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:'#adb7c3'},marker);const activeMarker=element('marker',{id:'arrowActive',viewBox:'0 0 10 10',refX:'9',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto-start-reverse'},defs);element('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:'#4285f4'},activeMarker);const filter=element('filter',{id:'shadow',x:'-50%',y:'-50%',width:'200%',height:'200%'},defs);element('feDropShadow',{dx:'0',dy:'4',stdDeviation:'5',floodColor:'#202124',floodOpacity:'.10'},filter);
-  const pos=positions(),map=new Map(pos.map(p=>[p.id,p]));const scores=state.history[state.round]?.scores||state.pages.map(()=>1/state.pages.length);const radius=state.pages.length>8?25:30;
-  for(const link of state.links){const a=map.get(link.from),b=map.get(link.to);if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy),ux=dx/length,uy=dy/length;const start={x:a.x+ux*(radius+4),y:a.y+uy*(radius+4)},end={x:b.x-ux*(radius+12),y:b.y-uy*(radius+12)};const reverse=state.links.some(e=>e.from===link.to&&e.to===link.from);const offset=reverse?11:0;const mx=(start.x+end.x)/2-uy*offset,my=(start.y+end.y)/2+ux*offset;const active=state.selected===link.from;const path=element('path',{d:`M ${start.x} ${start.y} Q ${mx} ${my} ${end.x} ${end.y}`,class:`graph-edge${active?' active':''}`,'marker-end':`url(#${active?'arrowActive':'arrow'})`},svg);element('title',{},path).textContent=`${link.from} aponta para ${link.to}`}
-  for(const p of pos){const data=state.pages.find(x=>x.id===p.id),index=state.pages.indexOf(data),selected=state.selected===p.id;const g=element('g',{class:`graph-node${selected?' selected':''}`,role:'button',tabindex:'0','aria-label':`Página ${p.id}: ${data.title}. ${Math.round(scores[index]*100)}% de importância`,transform:`translate(${p.x},${p.y})`},svg);element('circle',{class:'outer',r:radius+6},g);element('circle',{r:radius,fill:color(p.id),opacity:'.11'},g);element('text',{class:'initial',y:'10',fill:color(p.id)},g).textContent=p.id;element('rect',{x:'-83',y:radius+8,width:'166',height:'39',rx:'7',fill:'#fff',opacity:'.94'},g);const label=element('text',{class:'node-label',y:radius+24},g);label.textContent=data.title.length>22?data.title.slice(0,20)+'…':data.title;element('text',{class:'node-score',y:radius+41},g).textContent=(scores[index]*100).toFixed(1)+'%';g.addEventListener('click',()=>{state.selected=p.id;state.edit=false;render()});g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();state.selected=p.id;render()}})}
-  $('networkCount').textContent=`${state.pages.length} páginas · ${state.links.length} links`;$('selectionHint').textContent=state.selected?`Página ${state.selected}: ative ou remova links no painel ao lado.`:innerWidth<=700?'Deslize o grafo para ver toda a rede.':'Selecione uma página para ver seus links.';
+
+function rankList(result){const max=Math.max(...result.scores);return `<ol class="rank-list">${result.order.map((id,index)=>{const page=pages.find(p=>p.id===id),score=result.scores[pages.indexOf(page)];return `<li><span class="rank-index">${index+1}º</span><span class="rank-letter" style="color:${page.color}">${id}</span><span class="rank-name">${page.name}<span class="rank-bar"><i style="width:${(score/max*100).toFixed(1)}%"></i></span></span></li>`}).join('')}</ol>`}
+
+function guideMarkup(){
+  if(state.step===0)return `<p class="guide-kicker">PASSO 1 DE 3 · OBSERVE</p><h3>Qual página você colocaria em primeiro?</h3><p>Cada seta é um link. Ela mostra que uma página indica outra. Observe a rede e escolha seu palpite.</p><div class="choices" role="group" aria-label="Escolha uma página"><button class="choice" type="button" data-guess="A" aria-pressed="${state.guess==='A'}"><b>A</b><small>Apostila</small></button><button class="choice" type="button" data-guess="B" aria-pressed="${state.guess==='B'}"><b>B</b><small>Blog</small></button><button class="choice" type="button" data-guess="C" aria-pressed="${state.guess==='C'}"><b>C</b><small>Portal</small></button><button class="choice" type="button" data-guess="D" aria-pressed="${state.guess==='D'}"><b>D</b><small>Notas</small></button></div><div class="guide-actions"><button class="primary-button" id="next" type="button" ${state.guess?'':'disabled'}>Ver o resultado <span aria-hidden="true">→</span></button><span class="guide-hint">Escolha uma página para continuar.</span></div>`;
+  if(state.step===1)return `<p class="guide-kicker">PASSO 2 DE 3 · DESCUBRA</p><h3>Os links fazem a importância circular.</h3><p>O PageRank começa com as páginas iguais. A cada rodada, elas passam importância pelos seus links. Isso se repete até a ordem estabilizar.</p><div class="mini-explain"><strong>O resultado da rede original</strong>C recebe indicações de A, B e D. A indicação de uma página importante também ganha peso.</div>${rankList(state.original)}<p class="prediction">Seu palpite: <strong>${state.guess}</strong> · Primeiro lugar: <strong>${state.original.order[0]}</strong></p><div class="guide-actions"><button class="primary-button" id="next" type="button">Mudar um link <span aria-hidden="true">→</span></button></div>`;
+  return `<p class="guide-kicker">PASSO 3 DE 3 · COMPARE</p><h3>Uma conexão muda o resultado.</h3><p>Adicionamos <strong>C → D</strong>. Agora C também recomenda D. A página D sobe mesmo sem mudar uma palavra do seu conteúdo.</p><div class="comparison"><div><small>ANTES · 5 LINKS</small><strong>${state.original.order.join(' ')}</strong></div><div class="after"><small>DEPOIS · 6 LINKS</small><strong>${state.changed.order.join(' ')}</strong></div></div><div class="insight">D passa do <strong>4º para o ${state.changed.order.indexOf('D')+1}º lugar</strong>. O PageRank mede a posição de cada página na rede.</div><div class="guide-actions"><button class="secondary-button" id="restart" type="button">↻ &nbsp; Recomeçar</button></div>`;
 }
-function renderInspector(){const host=$('inspectorContent');const p=state.pages.find(x=>x.id===state.selected);if(!p){host.innerHTML='<div class="blank-state"><div class="blank-icon">↗</div><strong>Escolha uma página no grafo</strong><p>Veja para onde ela aponta e mude suas conexões.</p></div>';return}if(state.edit){host.innerHTML=`<form id="editForm"><label class="inspector-label" for="editTitle">Título</label><input id="editTitle" maxlength="48" required value="${escapeHTML(p.title)}" style="width:100%;padding:9px;border:1px solid #dce2ea;border-radius:8px;margin-bottom:12px"><label class="inspector-label" for="editDescription">Descrição</label><textarea id="editDescription" maxlength="150" required rows="3" style="width:100%;padding:9px;border:1px solid #dce2ea;border-radius:8px;margin-bottom:12px">${escapeHTML(p.description)}</textarea><label class="inspector-label" for="editTags">Palavras-chave</label><input id="editTags" maxlength="90" value="${escapeHTML(p.tags)}" style="width:100%;padding:9px;border:1px solid #dce2ea;border-radius:8px;margin-bottom:12px"><button class="button small primary" type="submit">Salvar página</button> <button class="button small ghost" type="button" id="cancelEdit">Cancelar</button></form>`;$('editForm').onsubmit=e=>{e.preventDefault();p.title=$('editTitle').value.trim();p.description=$('editDescription').value.trim();p.tags=$('editTags').value.trim();if(!p.title||!p.description)return;state.edit=false;save();render();toast('Página atualizada.');};$('cancelEdit').onclick=()=>{state.edit=false;render()};return}
-  const outgoing=new Set(state.links.filter(e=>e.from===p.id).map(e=>e.to));host.innerHTML=`<div class="selected-header"><span class="selected-initial" style="color:${color(p.id)};background:${color(p.id)}18">${escapeHTML(p.id)}</span><div><h4>${escapeHTML(p.title)}</h4><small>${outgoing.size} ${outgoing.size===1?'link de saída':'links de saída'}</small></div></div><p class="inspector-description">${escapeHTML(p.description)}</p><div class="inspector-label">Esta página aponta para</div><div class="target-list">${state.pages.filter(other=>other.id!==p.id).map(other=>`<button class="target-row" data-target="${escapeHTML(other.id)}"><span><strong style="color:${color(other.id)}">${escapeHTML(other.id)}</strong> &nbsp; ${escapeHTML(other.title)}</span><span class="tag ${outgoing.has(other.id)?'':'off'}">${outgoing.has(other.id)?'Conectada':'Conectar'}</span></button>`).join('')}</div><div class="inspector-tip">Cada botão cria ou remove uma seta que sai da página ${escapeHTML(p.id)}. A direção muda o resultado.</div><button id="editPage" class="button small ghost" style="margin-top:12px" type="button">Editar texto</button> <button id="deletePage" class="delete-page" type="button">Excluir página</button>`;
-  host.querySelectorAll('[data-target]').forEach(button=>button.onclick=()=>{const to=button.dataset.target,exists=state.links.findIndex(e=>e.from===p.id&&e.to===to);if(exists>=0){state.links.splice(exists,1);toast(`Link ${p.id} → ${to} removido.`)}else{state.links.push({from:p.id,to});toast(`Link ${p.id} → ${to} criado.`)}recalculate({toEnd:true})});$('editPage').onclick=()=>{state.edit=true;renderInspector()};$('deletePage').onclick=()=>{if(state.pages.length<=2)return toast('Mantenha ao menos duas páginas.');state.pages=state.pages.filter(x=>x.id!==p.id);state.links=state.links.filter(e=>e.from!==p.id&&e.to!==p.id);state.selected=null;recalculate({toEnd:true});toast('Página excluída.')};
+
+function render({focus=false}={}){
+  drawGraph();for(let index=0;index<3;index++){$(`step-${index}`).className=index<state.step?'done':index===state.step?'current':'';if(index===state.step)$(`step-${index}`).setAttribute('aria-current','step');else $(`step-${index}`).removeAttribute('aria-current')}
+  $('guide').innerHTML=guideMarkup();
+  $('guide').querySelectorAll('[data-guess]').forEach(button=>button.addEventListener('click',()=>{state.guess=button.dataset.guess;for(const choice of $('guide').querySelectorAll('[data-guess]'))choice.setAttribute('aria-pressed',String(choice.dataset.guess===state.guess));$('next').disabled=false;$('guide').querySelector('.guide-hint').textContent=`Seu palpite: página ${state.guess}.`;}));
+  $('next')?.addEventListener('click',()=>advance());$('restart')?.addEventListener('click',()=>{state.step=0;state.guess=null;render({focus:true})});
+  if(focus){const heading=$('guide').querySelector('h3');heading.tabIndex=-1;heading.focus({preventScroll:true})}
 }
-function normalize(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
-function renderRanking(){const host=$('rankingList'),scores=state.history[state.round]?.scores||state.pages.map(()=>1/state.pages.length);const terms=normalize(state.query).split(/\s+/).filter(Boolean);const matches=state.pages.map((p,i)=>({p,i,score:scores[i]})).filter(({p})=>terms.every(t=>normalize(`${p.title} ${p.description} ${p.tags}`).includes(t))).sort((a,b)=>b.score-a.score);host.innerHTML=matches.length?matches.map(({p,score},rank)=>`<div class="rank-item"><span class="rank-number">${rank+1}.</span><span class="rank-initial" style="color:${color(p.id)}">${escapeHTML(p.id)}</span><div class="rank-info"><strong>${escapeHTML(p.title)}</strong><small>${escapeHTML(p.description)}</small><div class="rank-bar"><i style="width:${Math.min(100,score*300)}%;background:${color(p.id)}"></i></div></div><span class="rank-percent">${(score*100).toFixed(1)}%</span></div>`).join(''):`<div class="no-results">Nenhuma página da rede contém todos esses termos.<br>Edite uma página ou tente outra busca.</div>`;}
-function renderSteps(){const max=Math.max(0,state.history.length-1);$('timeline').max=String(max);$('timeline').value=String(state.round);$('roundBadge').textContent=`Rodada ${state.round}`;$('stepBack').disabled=state.round===0;$('stepForward').disabled=state.round===max;$('finish').disabled=state.round===max;if(state.round===0){$('stepTitle').textContent='Todas as páginas começam iguais.';$('stepDetail').textContent='A importância será distribuída pelos links da rede.'}else if(state.round===max){$('stepTitle').textContent='As pontuações se estabilizaram.';$('stepDetail').textContent=`Depois de ${max} rodadas, novas mudanças são quase imperceptíveis. Mude uma seta e compare.`}else{$('stepTitle').textContent='A importância percorre as setas.';$('stepDetail').textContent=`Rodada ${state.round} de ${max}. Compare as barras e avance para ver a ordem mudar.`}}
-function render(){renderGraph();renderInspector();renderRanking();renderSteps();$('damping').value=String(Math.round(state.damping*100));$('dampingValue').textContent=Math.round(state.damping*100)+'%';$('preset').value=state.preset;}
-function setRound(value){state.round=Math.max(0,Math.min(state.history.length-1,value));renderGraph();renderRanking();renderSteps()}
-function play(){if(state.playing){stop();return}if(state.round>=state.history.length-1)state.round=0;$('play').innerHTML='Ⅱ <span>Pausar</span>';state.playing=setInterval(()=>{if(state.round>=state.history.length-1){stop();return}setRound(state.round+1)},280)}
-$('preset').onchange=e=>changePreset(e.target.value);$('reset').onclick=()=>{changePreset(state.preset);toast('Cenário restaurado.')};$('query').oninput=e=>{state.query=e.target.value.trim();renderRanking()};$('clearQuery').onclick=()=>{$('query').value='';state.query='';renderRanking();$('query').focus()};$('searchButton').onclick=()=>{$('query').focus();renderRanking()};document.querySelectorAll('[data-query]').forEach(button=>button.onclick=()=>{$('query').value=button.dataset.query;state.query=button.dataset.query;renderRanking();$('rankingList').scrollIntoView({behavior:'smooth',block:'nearest'})});$('damping').oninput=e=>{$('dampingValue').textContent=e.target.value+'%'};$('damping').onchange=e=>{state.damping=Number(e.target.value)/100;recalculate({toEnd:true})};$('timeline').oninput=e=>{stop();setRound(Number(e.target.value))};$('stepBack').onclick=()=>{stop();setRound(state.round-1)};$('stepForward').onclick=()=>{stop();setRound(state.round+1)};$('finish').onclick=()=>{stop();setRound(state.history.length-1)};$('play').onclick=play;
-$('addPage').onclick=()=>$('pageDialog').showModal();$('closeDialog').onclick=()=>$('pageDialog').close();$('cancelDialog').onclick=()=>$('pageDialog').close();$('pageForm').onsubmit=e=>{e.preventDefault();if(state.pages.length>=12){toast('O limite é de 12 páginas.');return}let n=0,id;do{id=String.fromCharCode(65+n++)}while(state.pages.some(p=>p.id===id));state.pages.push({id,title:$('pageTitle').value.trim(),description:$('pageDescription').value.trim(),tags:$('pageTags').value.trim()});state.selected=id;$('pageForm').reset();$('pageDialog').close();recalculate({toEnd:true});toast(`Página ${id} criada. Conecte-a às outras.`)};
-recalculate();
+
+function advance(){if(state.step>=2||state.step===0&&!state.guess)return;state.step++;render({focus:true});const graph=$('network');graph.classList.add('network-flow');setTimeout(()=>graph.classList.remove('network-flow'),1000)}
+function showError(error){$('guide').innerHTML=`<p class="guide-kicker">NÃO FOI POSSÍVEL CARREGAR</p><h3>A experiência está indisponível.</h3><p>${error.message}</p><div class="guide-actions"><button id="retry" class="primary-button" type="button">Tentar novamente</button></div>`;$('retry').onclick=load}
+async function load(){try{$('guide').innerHTML='<p class="guide-loading">Preparando a experiência…</p>';[state.original,state.changed]=await Promise.all([calculate(originalLinks),calculate(changedLinks)]);state.step=0;state.guess=null;render()}catch(error){showError(error)}}
+addEventListener('resize',()=>drawGraph());
+load();

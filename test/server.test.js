@@ -25,7 +25,7 @@ test('servidor entrega site, saúde e simulação', async () => {
     assert.deepEqual(await health.json(), { status: 'ok' });
     const page = await fetch(url);
     assert.equal(page.status, 200);
-    assert.match(await page.text(), /Laboratório PageRank/);
+    assert.match(await page.text(), /Como funciona o PageRank/);
     const result = await fetch(`${url}/api/simulate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pages: [{ id: 'A' }, { id: 'B' }], links: [{ from: 'A', to: 'B' }], damping: .85 }) });
     assert.equal(result.status, 200);
     assert.deepEqual((await result.json()).order, [1, 0]);
